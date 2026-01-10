@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur Moyenne Master STIC</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .result-row {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .summary {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        #final-moyen {
+            font-size: 2.5em;
+            display: block;
+            margin: 10px 0;
+            color: var(--primary);
+        }
+
+        .status {
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .admis { background: #dcfce7; color: var(--success); }
+        .ajourne { background: #fee2e2; color: var(--danger); }
+
+        .btn-clear {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            th:nth-child(2), td:nth-child(2) { display: none; } /* Cache les coefficients sur mobile pour gagner de la place */
+            input[type="number"] { width: 60px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calculateur de Moyenne - Master STIC</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Module</th>
+                <th>Coeff</th>
+                <th>Examen (60%)</th>
+                <th>CC (40%)</th>
+                <th>Moyenne</th>
+            </tr>
+        </thead>
+        <tbody id="modules-body">
+            </tbody>
+    </table>
+
+    <div class="summary">
+        <h3>Moyenne Générale</h3>
+        <span id="final-moyen">0.00</span>
+        <div id="status-box" class="status">Veuillez saisir vos notes</div>
+        <br>
+        <button class="btn-clear" onclick="clearData()">Réinitialiser les notes</button>
+    </div>
+</div>
+
+<script>
+    const modules = [
+        { name: "Bases de Données Avancées", coeff: 3 },
+        { name: "Modèles de Calcul", coeff: 3 },
+        { name: "Techniques d'Analyse de Données", coeff: 3 },
+        { name: "Traitement d'Images", coeff: 2 },
+        { name: "Réseaux", coeff: 2 },
+        { name: "IA (Intelligence Artificielle)", coeff: 2 },
+        { name: "Technologies du Web Avancé", coeff: 1 },
+        { name: "Gestion de Projets", coeff: 1 }
+    ];
+
+    const tbody = document.getElementById('modules-body');
+
+    // Génération du tableau
+    modules.forEach((mod, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${mod.name}</td>
+            <td>${mod.coeff}</td>
+            <td><input type="number" step="0.25" min="0" max="20" class="exam" data-index="${index}" oninput="calculate()"></td>
+            <td><input type="number" step="0.25" min="0" max="20" class="cc" data-index="${index}" oninput="calculate()"></td>
+            <td class="result-row" id="res-${index}">0.00</td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    function calculate() {
+        let totalPoints = 0;
+        let totalCoeffs = 0;
+        const exams = document.querySelectorAll('.exam');
+        const ccs = document.querySelectorAll('.cc');
+        
+        const savedData = [];
+
+        modules.forEach((mod, i) => {
+            const examNote = parseFloat(exams[i].value) || 0;
+            const ccNote = parseFloat(ccs[i].value) || 0;
+            
+            // Formule: Exam*0.6 + CC*0.4
+            const moduleMoyen = (examNote * 0.6) + (ccNote * 0.4);
+            document.getElementById(`res-${i}`).innerText = moduleMoyen.toFixed(2);
+            
+            totalPoints += (moduleMoyen * mod.coeff);
+            totalCoeffs += mod.coeff;
+
+            savedData.push({ exam: exams[i].value, cc: ccs[i].value });
+        });
+
+        const finalMoyen = totalPoints / totalCoeffs;
+        const display = document.getElementById('final-moyen');
+        display.innerText = finalMoyen.toFixed(2);
+
+        // Update Status
+        const statusBox = document.getElementById('status-box');
+        if (finalMoyen >= 10) {
+            statusBox.innerText = "ADMIS(E)";
+            statusBox.className = "status admis";
+            display.style.color = "var(--success)";
+        } else {
+            statusBox.innerText = "AJOURNÉ(E)";
+            statusBox.className = "status ajourne";
+            display.style.color = "var(--danger)";
+        }
+
+        // Sauvegarde locale
+        localStorage.setItem('stic_notes', JSON.stringify(savedData));
+    }
+
+    function clearData() {
+        if(confirm("Effacer toutes les notes ?")) {
+            localStorage.removeItem('stic_notes');
+            location.reload();
+        }
+    }
+
+    // Charger les données au démarrage
+    window.onload = () => {
+        const saved = JSON.parse(localStorage.getItem('stic_notes'));
+        if (saved) {
+            const exams = document.querySelectorAll('.exam');
+            const ccs = document.querySelectorAll('.cc');
+            saved.forEach((data, i) => {
+                exams[i].value = data.exam;
+                ccs[i].value = data.cc;
+            });
+            calculate();
+        }
+    };
+</script>
+
+</body>
+</html>
