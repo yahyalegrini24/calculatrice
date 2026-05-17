@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Calculateur Moyenne Master STIC</title>
+
     <style>
         :root {
             --primary: #2563eb;
@@ -24,7 +25,7 @@
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 950px;
             background: var(--card);
             padding: 30px;
             border-radius: 15px;
@@ -34,7 +35,30 @@
         h1 {
             text-align: center;
             color: #1e293b;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+        }
+
+        .semester-switch {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .semester-btn {
+            padding: 12px 25px;
+            border-radius: 30px;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .semester-btn.active {
+            background: var(--primary);
+            color: white;
         }
 
         table {
@@ -96,8 +120,15 @@
             display: inline-block;
         }
 
-        .admis { background: #dcfce7; color: var(--success); }
-        .ajourne { background: #fee2e2; color: var(--danger); }
+        .admis {
+            background: #dcfce7;
+            color: var(--success);
+        }
+
+        .ajourne {
+            background: #fee2e2;
+            color: var(--danger);
+        }
 
         .btn-clear {
             background: var(--danger);
@@ -110,16 +141,35 @@
         }
 
         @media (max-width: 600px) {
-            th:nth-child(2), td:nth-child(2) { display: none; } /* Cache les coefficients sur mobile pour gagner de la place */
-            input[type="number"] { width: 60px; }
+            th:nth-child(2),
+            td:nth-child(2) {
+                display: none;
+            }
+
+            input[type="number"] {
+                width: 60px;
+            }
         }
     </style>
 </head>
+
 <body>
 
 <div class="container">
+
     <h1>Calculateur de Moyenne - Master STIC</h1>
-    
+
+    <!-- Switch Semester -->
+    <div class="semester-switch">
+        <button class="semester-btn active" onclick="switchSemester('s1')" id="btn-s1">
+            Semestre 1
+        </button>
+
+        <button class="semester-btn" onclick="switchSemester('s2')" id="btn-s2">
+            Semestre 2
+        </button>
+    </div>
+
     <table>
         <thead>
             <tr>
@@ -130,108 +180,283 @@
                 <th>Moyenne</th>
             </tr>
         </thead>
-        <tbody id="modules-body">
-            </tbody>
+
+        <tbody id="modules-body"></tbody>
     </table>
 
     <div class="summary">
         <h3>Moyenne Générale</h3>
+
         <span id="final-moyen">0.00</span>
-        <div id="status-box" class="status">Veuillez saisir vos notes</div>
-        <br>
-        <button class="btn-clear" onclick="clearData()">Réinitialiser les notes</button>
+
+        <div id="status-box" class="status">
+            Veuillez saisir vos notes
+        </div>
+
+        <br />
+
+        <button class="btn-clear" onclick="clearData()">
+            Réinitialiser les notes
+        </button>
     </div>
 </div>
 
 <script>
-    const modules = [
+
+    // =========================
+    // SEMESTRE 1 (FROM IMAGE)
+    // =========================
+    const semestre1 = [
+        { name: "BDD avancées", coeff: 3 },
+        { name: "Modèle de calcul", coeff: 3 },
+        { name: "Techniques d’analyse de données", coeff: 3 },
+        { name: "Analyse et traitement d’images", coeff: 2 },
+        { name: "Réseaux sans fil & réseaux mobiles", coeff: 2 },
+        { name: "Technologies du web intelligent", coeff: 1 },
+        { name: "Techniques de l’IA", coeff: 2 },
+        { name: "Gestion des projets & Entrepreneuriat", coeff: 1 }
+    ];
+
+    // =========================
+    // SEMESTRE 2 (OLD CODE)
+    // =========================
+    const semestre2 = [
         { name: "Algorithme", coeff: 3 },
-        { name: "simulation", coeff: 3 },
-        { name: "theorie de linfo", coeff: 3 },
-        { name: "Traitement d'Images2", coeff: 2 },
+        { name: "Simulation", coeff: 3 },
+        { name: "Théorie de l'information", coeff: 3 },
+        { name: "Traitement d'Images 2", coeff: 2 },
         { name: "Réseaux 2", coeff: 2 },
         { name: "XML", coeff: 2 },
-        { name: "bogharab", coeff: 1 },
+        { name: "Bogharab", coeff: 1 },
         { name: "Derdar", coeff: 1 }
     ];
 
-    const tbody = document.getElementById('modules-body');
+    let currentSemester = "s1";
 
-    // Génération du tableau
-    modules.forEach((mod, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${mod.name}</td>
-            <td>${mod.coeff}</td>
-            <td><input type="number" step="0.25" min="0" max="20" class="exam" data-index="${index}" oninput="calculate()"></td>
-            <td><input type="number" step="0.25" min="0" max="20" class="cc" data-index="${index}" oninput="calculate()"></td>
-            <td class="result-row" id="res-${index}">0.00</td>
-        `;
-        tbody.appendChild(row);
-    });
+    const tbody = document.getElementById("modules-body");
 
+    // =========================
+    // LOAD TABLE
+    // =========================
+    function loadModules() {
+
+        tbody.innerHTML = "";
+
+        const modules =
+            currentSemester === "s1"
+            ? semestre1
+            : semestre2;
+
+        modules.forEach((mod, index) => {
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${mod.name}</td>
+
+                <td>${mod.coeff}</td>
+
+                <td>
+                    <input
+                        type="number"
+                        step="0.25"
+                        min="0"
+                        max="20"
+                        class="exam"
+                        data-index="${index}"
+                        oninput="calculate()"
+                    >
+                </td>
+
+                <td>
+                    <input
+                        type="number"
+                        step="0.25"
+                        min="0"
+                        max="20"
+                        class="cc"
+                        data-index="${index}"
+                        oninput="calculate()"
+                    >
+                </td>
+
+                <td class="result-row" id="res-${index}">
+                    0.00
+                </td>
+            `;
+
+            tbody.appendChild(row);
+        });
+
+        loadSavedData();
+    }
+
+    // =========================
+    // SWITCH SEMESTER
+    // =========================
+    function switchSemester(semester) {
+
+        currentSemester = semester;
+
+        document
+            .getElementById("btn-s1")
+            .classList.remove("active");
+
+        document
+            .getElementById("btn-s2")
+            .classList.remove("active");
+
+        document
+            .getElementById(`btn-${semester}`)
+            .classList.add("active");
+
+        loadModules();
+    }
+
+    // =========================
+    // CALCULATE
+    // =========================
     function calculate() {
+
+        const modules =
+            currentSemester === "s1"
+            ? semestre1
+            : semestre2;
+
         let totalPoints = 0;
         let totalCoeffs = 0;
-        const exams = document.querySelectorAll('.exam');
-        const ccs = document.querySelectorAll('.cc');
-        
+
+        const exams = document.querySelectorAll(".exam");
+        const ccs = document.querySelectorAll(".cc");
+
         const savedData = [];
 
         modules.forEach((mod, i) => {
-            const examNote = parseFloat(exams[i].value) || 0;
-            const ccNote = parseFloat(ccs[i].value) || 0;
-            
-            // Formule: Exam*0.6 + CC*0.4
-            const moduleMoyen = (examNote * 0.6) + (ccNote * 0.4);
-            document.getElementById(`res-${i}`).innerText = moduleMoyen.toFixed(2);
-            
-            totalPoints += (moduleMoyen * mod.coeff);
+
+            const examNote =
+                parseFloat(exams[i].value) || 0;
+
+            const ccNote =
+                parseFloat(ccs[i].value) || 0;
+
+            // Exam 60% + CC 40%
+            const moduleMoyen =
+                (examNote * 0.6) +
+                (ccNote * 0.4);
+
+            document.getElementById(`res-${i}`).innerText =
+                moduleMoyen.toFixed(2);
+
+            totalPoints +=
+                moduleMoyen * mod.coeff;
+
             totalCoeffs += mod.coeff;
 
-            savedData.push({ exam: exams[i].value, cc: ccs[i].value });
+            savedData.push({
+                exam: exams[i].value,
+                cc: ccs[i].value
+            });
         });
 
-        const finalMoyen = totalPoints / totalCoeffs;
-        const display = document.getElementById('final-moyen');
-        display.innerText = finalMoyen.toFixed(2);
+        const finalMoyen =
+            totalPoints / totalCoeffs;
 
-        // Update Status
-        const statusBox = document.getElementById('status-box');
+        const display =
+            document.getElementById("final-moyen");
+
+        display.innerText =
+            finalMoyen.toFixed(2);
+
+        // STATUS
+        const statusBox =
+            document.getElementById("status-box");
+
         if (finalMoyen >= 10) {
+
             statusBox.innerText = "ADMIS(E)";
             statusBox.className = "status admis";
-            display.style.color = "var(--success)";
+
+            display.style.color =
+                "var(--success)";
+
         } else {
+
             statusBox.innerText = "AJOURNÉ(E)";
             statusBox.className = "status ajourne";
-            display.style.color = "var(--danger)";
+
+            display.style.color =
+                "var(--danger)";
         }
 
-        // Sauvegarde locale
-        localStorage.setItem('stic_notes', JSON.stringify(savedData));
+        // SAVE
+        localStorage.setItem(
+            `stic_notes_${currentSemester}`,
+            JSON.stringify(savedData)
+        );
     }
 
-    function clearData() {
-        if(confirm("Effacer toutes les notes ?")) {
-            localStorage.removeItem('stic_notes');
-            location.reload();
-        }
-    }
+    // =========================
+    // LOAD SAVED DATA
+    // =========================
+    function loadSavedData() {
 
-    // Charger les données au démarrage
-    window.onload = () => {
-        const saved = JSON.parse(localStorage.getItem('stic_notes'));
+        const saved = JSON.parse(
+            localStorage.getItem(
+                `stic_notes_${currentSemester}`
+            )
+        );
+
         if (saved) {
-            const exams = document.querySelectorAll('.exam');
-            const ccs = document.querySelectorAll('.cc');
+
+            const exams =
+                document.querySelectorAll(".exam");
+
+            const ccs =
+                document.querySelectorAll(".cc");
+
             saved.forEach((data, i) => {
-                exams[i].value = data.exam;
-                ccs[i].value = data.cc;
+
+                if (exams[i]) exams[i].value = data.exam;
+
+                if (ccs[i]) ccs[i].value = data.cc;
             });
+
             calculate();
         }
+        else {
+
+            document.getElementById("final-moyen").innerText = "0.00";
+
+            document.getElementById("status-box").innerText =
+                "Veuillez saisir vos notes";
+
+            document.getElementById("status-box").className =
+                "status";
+        }
+    }
+
+    // =========================
+    // CLEAR DATA
+    // =========================
+    function clearData() {
+
+        if (confirm("Effacer toutes les notes ?")) {
+
+            localStorage.removeItem(
+                `stic_notes_${currentSemester}`
+            );
+
+            loadModules();
+        }
+    }
+
+    // =========================
+    // START
+    // =========================
+    window.onload = () => {
+        loadModules();
     };
+
 </script>
 
 </body>
