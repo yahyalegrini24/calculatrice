@@ -1,177 +1,403 @@
-<!DOCTYPE html>
+            <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculateur Moyenne Master STIC</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <style>
-        :root {
-            --primary: #2563eb;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --bg: #f8fafc;
-            --card: #ffffff;
-        }
+<title>Calculateur Moyenne Master STIC</title>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-        .container {
-            width: 100%;
-            max-width: 950px;
-            background: var(--card);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
+<style>
 
-        h1 {
-            text-align: center;
-            color: #1e293b;
-            margin-bottom: 25px;
-        }
+:root{
+    --primary:#2563eb;
+    --primary-light:#dbeafe;
+    --success:#16a34a;
+    --danger:#dc2626;
+    --warning:#f59e0b;
+    --bg:#f1f5f9;
+    --card:#ffffff;
+    --text:#0f172a;
+    --muted:#64748b;
+    --border:#e2e8f0;
+    --shadow:0 10px 30px rgba(0,0,0,0.08);
+}
 
-        .semester-switch {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-        .semester-btn {
-            padding: 12px 25px;
-            border-radius: 30px;
-            border: 2px solid var(--primary);
-            background: white;
-            color: var(--primary);
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
+body{
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    background:
+        radial-gradient(circle at top left,#dbeafe 0%,transparent 30%),
+        radial-gradient(circle at bottom right,#bfdbfe 0%,transparent 30%),
+        var(--bg);
+    min-height:100vh;
+    padding:25px;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+}
 
-        .semester-btn.active {
-            background: var(--primary);
-            color: white;
-        }
+.container{
+    width:100%;
+    max-width:1100px;
+    background:var(--card);
+    border-radius:24px;
+    padding:30px;
+    box-shadow:var(--shadow);
+    animation:fadeIn .5s ease;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(10px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
 
-        th {
-            background-color: #f1f5f9;
-            color: #475569;
-            padding: 12px;
-            text-align: left;
-            border-bottom: 2px solid #e2e8f0;
-        }
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:20px;
+    margin-bottom:25px;
+}
 
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #e2e8f0;
-        }
+h1{
+    color:var(--text);
+    font-size:2rem;
+}
 
-        input[type="number"] {
-            width: 80px;
-            padding: 8px;
-            border: 1px solid #cbd5e1;
-            border-radius: 5px;
-            outline: none;
-        }
+.subtitle{
+    color:var(--muted);
+    margin-top:5px;
+}
 
-        input[type="number"]:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
-        }
+.semester-switch{
+    display:flex;
+    gap:12px;
+}
 
-        .result-row {
-            font-weight: bold;
-            color: var(--primary);
-        }
+.semester-btn{
+    border:none;
+    background:white;
+    color:var(--primary);
+    border:2px solid var(--primary);
+    padding:12px 22px;
+    border-radius:50px;
+    cursor:pointer;
+    font-weight:700;
+    transition:.25s;
+}
 
-        .summary {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f1f5f9;
-            border-radius: 10px;
-            text-align: center;
-        }
+.semester-btn:hover{
+    transform:translateY(-2px);
+}
 
-        #final-moyen {
-            font-size: 2.5em;
-            display: block;
-            margin: 10px 0;
-            color: var(--primary);
-        }
+.semester-btn.active{
+    background:linear-gradient(135deg,var(--primary),#1d4ed8);
+    color:white;
+    box-shadow:0 6px 20px rgba(37,99,235,.3);
+}
 
-        .status {
-            font-weight: bold;
-            padding: 5px 15px;
-            border-radius: 20px;
-            display: inline-block;
-        }
+.dashboard{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:18px;
+    margin-bottom:25px;
+}
 
-        .admis {
-            background: #dcfce7;
-            color: var(--success);
-        }
+.card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.03);
+}
 
-        .ajourne {
-            background: #fee2e2;
-            color: var(--danger);
-        }
+.card-title{
+    color:var(--muted);
+    font-size:.9rem;
+    margin-bottom:8px;
+}
 
-        .btn-clear {
-            background: var(--danger);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
+.big-number{
+    font-size:2rem;
+    font-weight:800;
+    color:var(--text);
+}
 
-        @media (max-width: 600px) {
-            th:nth-child(2),
-            td:nth-child(2) {
-                display: none;
-            }
+.progress-wrapper{
+    margin-top:12px;
+    width:100%;
+    height:10px;
+    background:#e2e8f0;
+    border-radius:20px;
+    overflow:hidden;
+}
 
-            input[type="number"] {
-                width: 60px;
-            }
-        }
-    </style>
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--danger),var(--warning),var(--success));
+    transition:.4s;
+}
+
+.status{
+    display:inline-block;
+    margin-top:10px;
+    padding:8px 14px;
+    border-radius:50px;
+    font-weight:700;
+    font-size:.9rem;
+}
+
+.admis{
+    background:#dcfce7;
+    color:var(--success);
+}
+
+.ajourne{
+    background:#fee2e2;
+    color:var(--danger);
+}
+
+.table-wrapper{
+    overflow-x:auto;
+    border-radius:20px;
+    border:1px solid var(--border);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:700px;
+}
+
+thead{
+    background:#f8fafc;
+}
+
+th{
+    padding:16px;
+    text-align:left;
+    color:#475569;
+    font-size:.95rem;
+}
+
+td{
+    padding:14px 16px;
+    border-top:1px solid var(--border);
+}
+
+tbody tr{
+    transition:.2s;
+}
+
+tbody tr:hover{
+    background:#f8fafc;
+}
+
+.module-name{
+    font-weight:600;
+    color:#1e293b;
+}
+
+.coeff-badge{
+    background:var(--primary-light);
+    color:var(--primary);
+    padding:5px 12px;
+    border-radius:50px;
+    font-weight:700;
+    font-size:.85rem;
+}
+
+input[type="number"]{
+    width:90px;
+    padding:10px;
+    border-radius:10px;
+    border:1px solid #cbd5e1;
+    font-size:1rem;
+    transition:.2s;
+    outline:none;
+}
+
+input[type="number"]:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 4px rgba(37,99,235,.1);
+}
+
+.result-row{
+    font-weight:800;
+    color:var(--primary);
+    font-size:1rem;
+}
+
+.footer{
+    margin-top:25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    border:none;
+    padding:12px 22px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:700;
+    transition:.25s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+}
+
+.btn-clear{
+    background:var(--danger);
+    color:white;
+}
+
+.btn-save{
+    background:var(--success);
+    color:white;
+}
+
+.general-average{
+    background:linear-gradient(135deg,#2563eb,#1e40af);
+    color:white;
+    border-radius:22px;
+    padding:25px;
+    text-align:center;
+    margin-top:30px;
+    box-shadow:0 15px 35px rgba(37,99,235,.2);
+}
+
+.general-average h2{
+    font-size:1.2rem;
+    opacity:.9;
+    margin-bottom:10px;
+}
+
+.general-average .value{
+    font-size:4rem;
+    font-weight:900;
+}
+
+.general-average .mention{
+    margin-top:10px;
+    font-size:1rem;
+    opacity:.95;
+}
+
+@media(max-width:700px){
+
+    body{
+        padding:10px;
+    }
+
+    .container{
+        padding:18px;
+    }
+
+    h1{
+        font-size:1.5rem;
+    }
+
+    .general-average .value{
+        font-size:3rem;
+    }
+
+}
+
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-    <h1>Calculateur de Moyenne - Master STIC</h1>
+    <div class="header">
 
-    <!-- Switch Semester -->
-    <div class="semester-switch">
-        <button class="semester-btn active" onclick="switchSemester('s1')" id="btn-s1">
-            Semestre 1
-        </button>
+        <div>
+            <h1>🎓 Calculateur Moyenne Master STIC</h1>
+            <div class="subtitle">
+                Calcul automatique avec sauvegarde locale
+            </div>
+        </div>
 
-        <button class="semester-btn" onclick="switchSemester('s2')" id="btn-s2">
-            Semestre 2
-        </button>
+        <div class="semester-switch">
+            <button class="semester-btn active"
+                    onclick="switchSemester('s1')"
+                    id="btn-s1">
+                Semestre 1
+            </button>
+
+            <button class="semester-btn"
+                    onclick="switchSemester('s2')"
+                    id="btn-s2">
+                Semestre 2
+            </button>
+        </div>
+
     </div>
 
-    <table>
-        <thead>
+    <!-- DASHBOARD -->
+    <div class="dashboard">
+
+        <div class="card">
+            <div class="card-title">Moyenne Semestre</div>
+
+            <div class="big-number" id="final-moyen">
+                0.00
+            </div>
+
+            <div class="progress-wrapper">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <div id="status-box" class="status">
+                En attente...
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Modules validés</div>
+
+            <div class="big-number" id="validated-count">
+                0
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Coefficient Total</div>
+
+            <div class="big-number" id="coeff-total">
+                0
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
             <tr>
                 <th>Module</th>
                 <th>Coeff</th>
@@ -179,283 +405,377 @@
                 <th>CC (40%)</th>
                 <th>Moyenne</th>
             </tr>
-        </thead>
+            </thead>
 
-        <tbody id="modules-body"></tbody>
-    </table>
+            <tbody id="modules-body"></tbody>
 
-    <div class="summary">
-        <h3>Moyenne Générale</h3>
+        </table>
 
-        <span id="final-moyen">0.00</span>
+    </div>
 
-        <div id="status-box" class="status">
-            Veuillez saisir vos notes
+    <!-- GENERAL AVERAGE -->
+    <div class="general-average">
+
+        <h2>Moyenne Générale Annuelle</h2>
+
+        <div class="value" id="general-average">
+            0.00
         </div>
 
-        <br />
+        <div class="mention" id="general-mention">
+            Saisissez vos notes des deux semestres
+        </div>
 
-        <button class="btn-clear" onclick="clearData()">
-            Réinitialiser les notes
-        </button>
     </div>
+
+    <div class="footer">
+
+        <button class="btn btn-clear" onclick="clearData()">
+            Réinitialiser
+        </button>
+
+        <button class="btn btn-save" onclick="saveScreenshot()">
+            Sauvegarder Résultat
+        </button>
+
+    </div>
+
 </div>
 
 <script>
 
-    // =========================
-    // SEMESTRE 1 (FROM IMAGE)
-    // =========================
-    const semestre1 = [
-        { name: "BDD avancées", coeff: 3 },
-        { name: "Modèle de calcul", coeff: 3 },
-        { name: "Techniques d’analyse de données", coeff: 3 },
-        { name: "Analyse et traitement d’images", coeff: 2 },
-        { name: "Réseaux sans fil & réseaux mobiles", coeff: 2 },
-        { name: "Technologies du web intelligent", coeff: 1 },
-        { name: "Techniques de l’IA", coeff: 2 },
-        { name: "Gestion des projets & Entrepreneuriat", coeff: 1 }
-    ];
+// =========================
+// SEMESTRE 1
+// =========================
+const semestre1 = [
+    { name:"BDD avancées", coeff:3 },
+    { name:"Modèle de calcul", coeff:3 },
+    { name:"Techniques d’analyse de données", coeff:3 },
+    { name:"Analyse et traitement d’images", coeff:2 },
+    { name:"Réseaux sans fil & réseaux mobiles", coeff:2 },
+    { name:"Technologies du web intelligent", coeff:1 },
+    { name:"Techniques de l’IA", coeff:2 },
+    { name:"Gestion des projets & Entrepreneuriat", coeff:1 }
+];
 
-    // =========================
-    // SEMESTRE 2 (OLD CODE)
-    // =========================
-    const semestre2 = [
-        { name: "Algorithme", coeff: 3 },
-        { name: "Simulation", coeff: 3 },
-        { name: "Théorie de l'information", coeff: 3 },
-        { name: "Traitement d'Images 2", coeff: 2 },
-        { name: "Réseaux 2", coeff: 2 },
-        { name: "XML", coeff: 2 },
-        { name: "Bogharab", coeff: 1 },
-        { name: "Derdar", coeff: 1 }
-    ];
+// =========================
+// SEMESTRE 2
+// =========================
+const semestre2 = [
+    { name:"Algorithme", coeff:3 },
+    { name:"Simulation", coeff:3 },
+    { name:"Théorie de l'information", coeff:3 },
+    { name:"Traitement d'Images 2", coeff:2 },
+    { name:"Réseaux 2", coeff:2 },
+    { name:"XML", coeff:2 },
+    { name:"Bogharab", coeff:1 },
+    { name:"Derdar", coeff:1 }
+];
 
-    let currentSemester = "s1";
+let currentSemester = "s1";
 
-    const tbody = document.getElementById("modules-body");
+const tbody = document.getElementById("modules-body");
 
-    // =========================
-    // LOAD TABLE
-    // =========================
-    function loadModules() {
+// =========================
+// LOAD MODULES
+// =========================
+function loadModules(){
 
-        tbody.innerHTML = "";
+    tbody.innerHTML = "";
 
-        const modules =
-            currentSemester === "s1"
-            ? semestre1
-            : semestre2;
+    const modules =
+        currentSemester === "s1"
+        ? semestre1
+        : semestre2;
 
-        modules.forEach((mod, index) => {
+    document.getElementById("coeff-total").innerText =
+        modules.reduce((a,b)=>a+b.coeff,0);
 
-            const row = document.createElement("tr");
+    modules.forEach((mod,index)=>{
 
-            row.innerHTML = `
-                <td>${mod.name}</td>
+        const row = document.createElement("tr");
 
-                <td>${mod.coeff}</td>
+        row.innerHTML = `
+            <td class="module-name">${mod.name}</td>
 
-                <td>
-                    <input
-                        type="number"
-                        step="0.25"
-                        min="0"
-                        max="20"
-                        class="exam"
-                        data-index="${index}"
-                        oninput="calculate()"
-                    >
-                </td>
+            <td>
+                <span class="coeff-badge">
+                    ${mod.coeff}
+                </span>
+            </td>
 
-                <td>
-                    <input
-                        type="number"
-                        step="0.25"
-                        min="0"
-                        max="20"
-                        class="cc"
-                        data-index="${index}"
-                        oninput="calculate()"
-                    >
-                </td>
+            <td>
+                <input
+                    type="number"
+                    step="0.25"
+                    min="0"
+                    max="20"
+                    class="exam"
+                    data-index="${index}"
+                    oninput="calculate()"
+                >
+            </td>
 
-                <td class="result-row" id="res-${index}">
-                    0.00
-                </td>
-            `;
+            <td>
+                <input
+                    type="number"
+                    step="0.25"
+                    min="0"
+                    max="20"
+                    class="cc"
+                    data-index="${index}"
+                    oninput="calculate()"
+                >
+            </td>
 
-            tbody.appendChild(row);
+            <td class="result-row" id="res-${index}">
+                0.00
+            </td>
+        `;
+
+        tbody.appendChild(row);
+    });
+
+    loadSavedData();
+}
+
+// =========================
+// SWITCH SEMESTER
+// =========================
+function switchSemester(semester){
+
+    currentSemester = semester;
+
+    document
+        .querySelectorAll(".semester-btn")
+        .forEach(btn=>btn.classList.remove("active"));
+
+    document
+        .getElementById(`btn-${semester}`)
+        .classList.add("active");
+
+    loadModules();
+}
+
+// =========================
+// CALCULATE
+// =========================
+function calculate(){
+
+    const modules =
+        currentSemester === "s1"
+        ? semestre1
+        : semestre2;
+
+    let totalPoints = 0;
+    let totalCoeffs = 0;
+    let validated = 0;
+
+    const exams =
+        document.querySelectorAll(".exam");
+
+    const ccs =
+        document.querySelectorAll(".cc");
+
+    const savedData = [];
+
+    modules.forEach((mod,i)=>{
+
+        const examNote =
+            parseFloat(exams[i].value) || 0;
+
+        const ccNote =
+            parseFloat(ccs[i].value) || 0;
+
+        const moduleMoyen =
+            (examNote * 0.6) +
+            (ccNote * 0.4);
+
+        if(moduleMoyen >= 10){
+            validated++;
+        }
+
+        document
+            .getElementById(`res-${i}`)
+            .innerText =
+            moduleMoyen.toFixed(2);
+
+        totalPoints +=
+            moduleMoyen * mod.coeff;
+
+        totalCoeffs += mod.coeff;
+
+        savedData.push({
+            exam: exams[i].value,
+            cc: ccs[i].value
+        });
+    });
+
+    const finalMoyen =
+        totalPoints / totalCoeffs;
+
+    // DISPLAY
+    document.getElementById("final-moyen").innerText =
+        finalMoyen.toFixed(2);
+
+    document.getElementById("validated-count").innerText =
+        validated;
+
+    // STATUS
+    const statusBox =
+        document.getElementById("status-box");
+
+    if(finalMoyen >= 10){
+
+        statusBox.innerText = "ADMIS(E)";
+        statusBox.className = "status admis";
+
+    }else{
+
+        statusBox.innerText = "AJOURNÉ(E)";
+        statusBox.className = "status ajourne";
+    }
+
+    // PROGRESS
+    document.getElementById("progress-bar").style.width =
+        `${(finalMoyen / 20) * 100}%`;
+
+    // SAVE
+    localStorage.setItem(
+        `stic_notes_${currentSemester}`,
+        JSON.stringify(savedData)
+    );
+
+    localStorage.setItem(
+        `moyenne_${currentSemester}`,
+        finalMoyen.toFixed(2)
+    );
+
+    calculateGeneralAverage();
+}
+
+// =========================
+// GENERAL AVERAGE
+// =========================
+function calculateGeneralAverage(){
+
+    const s1 =
+        parseFloat(localStorage.getItem("moyenne_s1")) || 0;
+
+    const s2 =
+        parseFloat(localStorage.getItem("moyenne_s2")) || 0;
+
+    let general = 0;
+
+    if(s1 && s2){
+        general = (s1 + s2) / 2;
+    }else{
+        general = s1 || s2;
+    }
+
+    document.getElementById("general-average").innerText =
+        general.toFixed(2);
+
+    const mention =
+        document.getElementById("general-mention");
+
+    if(general >= 16){
+        mention.innerText = "🌟 Excellent";
+    }
+    else if(general >= 14){
+        mention.innerText = "🔥 Très Bien";
+    }
+    else if(general >= 12){
+        mention.innerText = "✅ Bien";
+    }
+    else if(general >= 10){
+        mention.innerText = "✔️ Admis";
+    }
+    else{
+        mention.innerText = "❌ Ajourné";
+    }
+}
+
+// =========================
+// LOAD SAVED DATA
+// =========================
+function loadSavedData(){
+
+    const saved = JSON.parse(
+        localStorage.getItem(
+            `stic_notes_${currentSemester}`
+        )
+    );
+
+    if(saved){
+
+        const exams =
+            document.querySelectorAll(".exam");
+
+        const ccs =
+            document.querySelectorAll(".cc");
+
+        saved.forEach((data,i)=>{
+
+            if(exams[i]) exams[i].value = data.exam;
+
+            if(ccs[i]) ccs[i].value = data.cc;
         });
 
-        loadSavedData();
+        calculate();
     }
+    else{
 
-    // =========================
-    // SWITCH SEMESTER
-    // =========================
-    function switchSemester(semester) {
+        document.getElementById("final-moyen").innerText =
+            "0.00";
 
-        currentSemester = semester;
+        document.getElementById("status-box").innerText =
+            "En attente...";
 
-        document
-            .getElementById("btn-s1")
-            .classList.remove("active");
+        document.getElementById("status-box").className =
+            "status";
 
-        document
-            .getElementById("btn-s2")
-            .classList.remove("active");
-
-        document
-            .getElementById(`btn-${semester}`)
-            .classList.add("active");
-
-        loadModules();
+        calculateGeneralAverage();
     }
+}
 
-    // =========================
-    // CALCULATE
-    // =========================
-    function calculate() {
+// =========================
+// CLEAR
+// =========================
+function clearData(){
 
-        const modules =
-            currentSemester === "s1"
-            ? semestre1
-            : semestre2;
+    if(confirm("Effacer toutes les notes ?")){
 
-        let totalPoints = 0;
-        let totalCoeffs = 0;
-
-        const exams = document.querySelectorAll(".exam");
-        const ccs = document.querySelectorAll(".cc");
-
-        const savedData = [];
-
-        modules.forEach((mod, i) => {
-
-            const examNote =
-                parseFloat(exams[i].value) || 0;
-
-            const ccNote =
-                parseFloat(ccs[i].value) || 0;
-
-            // Exam 60% + CC 40%
-            const moduleMoyen =
-                (examNote * 0.6) +
-                (ccNote * 0.4);
-
-            document.getElementById(`res-${i}`).innerText =
-                moduleMoyen.toFixed(2);
-
-            totalPoints +=
-                moduleMoyen * mod.coeff;
-
-            totalCoeffs += mod.coeff;
-
-            savedData.push({
-                exam: exams[i].value,
-                cc: ccs[i].value
-            });
-        });
-
-        const finalMoyen =
-            totalPoints / totalCoeffs;
-
-        const display =
-            document.getElementById("final-moyen");
-
-        display.innerText =
-            finalMoyen.toFixed(2);
-
-        // STATUS
-        const statusBox =
-            document.getElementById("status-box");
-
-        if (finalMoyen >= 10) {
-
-            statusBox.innerText = "ADMIS(E)";
-            statusBox.className = "status admis";
-
-            display.style.color =
-                "var(--success)";
-
-        } else {
-
-            statusBox.innerText = "AJOURNÉ(E)";
-            statusBox.className = "status ajourne";
-
-            display.style.color =
-                "var(--danger)";
-        }
-
-        // SAVE
-        localStorage.setItem(
-            `stic_notes_${currentSemester}`,
-            JSON.stringify(savedData)
-        );
-    }
-
-    // =========================
-    // LOAD SAVED DATA
-    // =========================
-    function loadSavedData() {
-
-        const saved = JSON.parse(
-            localStorage.getItem(
-                `stic_notes_${currentSemester}`
-            )
+        localStorage.removeItem(
+            `stic_notes_${currentSemester}`
         );
 
-        if (saved) {
+        localStorage.removeItem(
+            `moyenne_${currentSemester}`
+        );
 
-            const exams =
-                document.querySelectorAll(".exam");
-
-            const ccs =
-                document.querySelectorAll(".cc");
-
-            saved.forEach((data, i) => {
-
-                if (exams[i]) exams[i].value = data.exam;
-
-                if (ccs[i]) ccs[i].value = data.cc;
-            });
-
-            calculate();
-        }
-        else {
-
-            document.getElementById("final-moyen").innerText = "0.00";
-
-            document.getElementById("status-box").innerText =
-                "Veuillez saisir vos notes";
-
-            document.getElementById("status-box").className =
-                "status";
-        }
-    }
-
-    // =========================
-    // CLEAR DATA
-    // =========================
-    function clearData() {
-
-        if (confirm("Effacer toutes les notes ?")) {
-
-            localStorage.removeItem(
-                `stic_notes_${currentSemester}`
-            );
-
-            loadModules();
-        }
-    }
-
-    // =========================
-    // START
-    // =========================
-    window.onload = () => {
         loadModules();
-    };
+        calculateGeneralAverage();
+    }
+}
+
+// =========================
+// SAVE SCREENSHOT
+// =========================
+function saveScreenshot(){
+
+    alert("Fonctionnalité prête pour html2canvas 📸");
+}
+
+// =========================
+// START
+// =========================
+window.onload = ()=>{
+
+    loadModules();
+    calculateGeneralAverage();
+
+};
 
 </script>
 
